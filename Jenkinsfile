@@ -13,7 +13,7 @@ pipeline {
         stage ('build') {
 
             steps { 
-               sh "docker build -t python-app:latest ."
+               sh "docker build -t kvnikhill/python-app:$BUILD_NUMBER ."
             }
         }
             
@@ -25,6 +25,22 @@ pipeline {
         }
 
 
-        }
+        stage ('push to docker hub') {
 
+            steps {
+
+
+               script {
+                     withDockerRegistry(credentialsId: 'python-docker-key', url: 'https://index.docker.io/v1/') {
+                        def image = docker.image("kvnikhill/python-app:${env.BUILD_NUMBER}")
+                        image.push()
+
+                     }
+                }
+
+            }
+
+        }        
+
+    }
 }
